@@ -1,3 +1,6 @@
+# Code for running AlphaFold3 on HPC systems using PBS Pro
+# Written by Miles Woodcock-Girard for Drew Lab at UIC
+
 #!/bin/bash -l
 #PBS -l select=10:system=polaris
 #PBS -l place=scatter
