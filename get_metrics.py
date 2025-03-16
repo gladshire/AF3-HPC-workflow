@@ -8,7 +8,6 @@ import csv
 import os
 import sys
 
-import pdockq_mmcif
 import pdockq
 
 
