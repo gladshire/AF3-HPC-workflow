@@ -84,6 +84,7 @@ for lh in local_hostfile*; do
 
         if [ -f $OUTPUT_CIF ]; then
                 echo "Model file found for $INPUT_FILE. Skipping"
+		i=$((i + 1))
                 continue
         fi
 
