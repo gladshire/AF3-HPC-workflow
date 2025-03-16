@@ -75,10 +75,12 @@ for lh in local_hostfile*; do
 	INPUT_FILE="${file_array[$i]}"
         INPUT_STEM="${INPUT_FILE%.*}"
 
-	# Skip if model already exists for this input
         OUTPUT_STEM="${INPUT_STEM,,}"
         OUTPUT_CURR="$OUTPUT_DIR/$OUTPUT_STEM"
         OUTPUT_CIF="$OUTPUT_CURR/${OUTPUT_STEM}_model.cif"
+
+	echo $OUTPUT_CURR
+	echo $OUTPUT_CIF
 
         if [ -f $OUTPUT_CIF ]; then
                 echo "Model file found for $INPUT_FILE. Skipping"
@@ -97,6 +99,7 @@ for lh in local_hostfile*; do
 		--bind $AF3_DATA:/root/databases \
 		$AF3_DIR/alphafold3.sif \
 		python3 $AF3_DIR/run_alphafold.py \
+		--norun_inference \
 		--json_path=/root/input_af3/${INPUT_FILE} \
 		--model_dir=/root/models \
 		--db_dir=/root/databases \
