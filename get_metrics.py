@@ -39,7 +39,7 @@ with open("metrics.csv", 'w') as csv_file:
             ranking_score = json_data["ranking_score"]
 
             # Obtain chain coordinates, pLDDTs from mmCIF file
-            chain_coords, chain_plddt = pDockQ.read_cif(curr_mmcif_path)
+            chain_coords, chain_plddt = pDockQ.read_model_file(curr_mmcif_path)
             pdockq, ppv = pDockQ.calc_pdockq(chain_coords, chain_plddt, 8)
 
             # Obtain number of disease variants
