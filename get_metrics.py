@@ -9,15 +9,15 @@ import os
 import sys
 
 import pdockq as pDockQ
-import vars_uniprot
+import uniprot_api
 
 
 
 with open("metrics.csv", 'w') as csv_file:
     csv_writer = csv.writer(csv_file, delimiter = ",")
-    csv_writer.writerow(["Pair", "ipTM", "pTM", "Ranking Score", "pDockQ", "Disease Variant"])
+    csv_writer.writerow(["Pair", "ipTM", "pTM", "Ranking Score", "pDockQ", "Disease Variant", "Novel Interaction"])
 
-    for pair in os.listdir():
+    for i, pair in enumerate(os.listdir()):
         if os.path.isdir(pair) == False:
             continue
 
@@ -26,6 +26,8 @@ with open("metrics.csv", 'w') as csv_file:
 
         if not os.path.exists(curr_json_path) or not os.path.exists(curr_mmcif_path):
             continue
+
+        print(f"{i} {pair}")
 
         prot1 = pair.split("_")[0]
         prot2 = pair.split("_")[1]
@@ -42,16 +44,23 @@ with open("metrics.csv", 'w') as csv_file:
             chain_coords, chain_plddt = pDockQ.read_model_file(curr_mmcif_path)
             pdockq, ppv = pDockQ.calc_pdockq(chain_coords, chain_plddt, 8)
 
-            # Obtain number of disease variants
-            numVars1 = vars_uniprot.count_disease_var(prot1)
-            numVars2 = vars_uniprot.count_disease_var(prot2)
+            # Discern whether disease variants exist for protein
+            numVars1 = uniprot_api.count_disease_var(prot1)
+            numVars2 = uniprot_api.count_disease_var(prot2)
 
             if numVars1 > 0 or numVars2 > 0:
                 disease_var = True
             else:
                 disease_var = False
 
-            csv_writer.writerow([pair, iptm, ptm, ranking_score, pdockq, disease_var])
+            # Determine if interaction can be found on UniProt
+            known_interact = uniprot_api.interaction_in_uniprot(prot1, prot2)
+
+            print(known_interact)
+
+
+
+            csv_writer.writerow([pair, iptm, ptm, ranking_score, pdockq, disease_var, known_interact])
 
             curr_json_file.close()
 
