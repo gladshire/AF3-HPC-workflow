@@ -10,6 +10,7 @@ import sys
 
 import pdockq as pDockQ
 import uniprot_api
+import pae
 
 
 
@@ -21,7 +22,8 @@ with open("metrics.csv", 'w') as csv_file:
         if os.path.isdir(pair) == False:
             continue
 
-        curr_json_path = f"./{pair}/{pair}_summary_confidences.json"
+        curr_json_scores = f"./{pair}/{pair}_confidences.json"
+        curr_json_summary = f"./{pair}/{pair}_summary_confidences.json"
         curr_mmcif_path = f"./{pair}/{pair}_model.cif"
 
         if not os.path.exists(curr_json_path) or not os.path.exists(curr_mmcif_path):
@@ -32,7 +34,7 @@ with open("metrics.csv", 'w') as csv_file:
         prot1 = pair.split("_")[0]
         prot2 = pair.split("_")[1]
 
-        with open(curr_json_path) as curr_json_file:
+        with open(curr_json_summary) as curr_json_file:
             json_data = json.load(curr_json_file)
     
             # Obtain ipTM, pTM, Ranking Scores from confidences JSON
@@ -56,11 +58,11 @@ with open("metrics.csv", 'w') as csv_file:
             # Determine if interaction can be found on UniProt
             known_interact = uniprot_api.interaction_in_uniprot(prot1, prot2)
 
-            print(known_interact)
+            # Get average PAE across all pairs of residues
+            avg_pae, pae_data, nres_c1, nres_c2 = pae.load_json(curr_json_scores)
 
-
-
-            csv_writer.writerow([pair, iptm, ptm, ranking_score, pdockq, disease_var, known_interact])
+            # Write pair data to row in CSV output
+            csv_writer.writerow([pair, iptm, ptm, ranking_score, avg_pae, pdockq, disease_var, known_interact])
 
             curr_json_file.close()
 
