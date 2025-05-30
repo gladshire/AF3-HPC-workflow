@@ -3,9 +3,12 @@
 
 import json
 import os
+import glob
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+import utils
 
 
 def load_json(file_path):
@@ -21,6 +24,7 @@ def load_json(file_path):
 
 def plot_pae_heatmap(path, pae_data, nres_c1, nres_c2):
     plt.figure(figsize=(8, 6))
+    #ax = sns.heatmap(pae_data, cmap='Greens_r', vmin=0, vmax=30, cbar=True)
     ax = sns.heatmap(pae_data, cmap='coolwarm', vmin=0, vmax=30, cbar=True)
     ax.axvline(x=nres_c1, linewidth=2, color="black")
     ax.axhline(y=nres_c1, linewidth=2, color="black")
@@ -40,8 +44,16 @@ for pair in os.listdir():
     if not os.path.isdir(pair):
         continue
 
-    conf_json = f"{pair}/{pair}_confidences.json"
-    pae_heatmap = f"{pair}/{pair}_pae.png"
+    if utils.usedAF3Server(pair):
+        best_model = utils.getBestModel(pair)
+        if best_model == -1:
+            print("Output not familiar AF3 file structure. Skipping ...")
+            continue
+        conf_json = glob.glob(f"{pair}/fold_{pair}_*_full_data_{best_model}.json")[0]
+    else:
+        conf_json = f"{pair}/{pair}_confidences.json"
+    
+    pae_heatmap = f"pae/{pair}_pae.png"
 
     if not os.path.exists(conf_json):
         print(f"{pair} confidences JSON missing! Skipping.")

@@ -37,6 +37,9 @@ def getBestModel(afOutputDir):
     if usedServer:
         summaryFiles = glob.glob(os.path.join(afOutputDir, "*_summary_confidences_*.json"))
 
+        if not summaryFiles:
+            return -1
+
         ranking_scores = []
         for summaryFile in summaryFiles:
             with open(summaryFile, 'r') as summary_json:
@@ -48,6 +51,9 @@ def getBestModel(afOutputDir):
 
     else:
         ranking_scores_csv = os.path.join(afOutputDir, "ranking_scores.csv")
+
+        if not os.path.exists(ranking_scores_csv):
+            return -1
 
         ranking_scores = []
         with open(ranking_scores_csv, 'r') as rankings_csv:
